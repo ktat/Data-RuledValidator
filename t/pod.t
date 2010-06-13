@@ -18,3 +18,4 @@ pod_coverage_ok
 pod_coverage_ok('Data::RuledValidator::Closure', 'D::R::Closure OK');
 pod_coverage_ok('Data::RuledValidator::Plugin::Core', 'D::R::P::Core OK');
 pod_coverage_ok('Data::RuledValidator::Filter', 'D::R::Filter OK');
+

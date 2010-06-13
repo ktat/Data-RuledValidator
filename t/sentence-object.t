@@ -1,4 +1,4 @@
-use Test::More 'no_plan';
+use Test::More;
 
 BEGIN {
   use lib qw(t/lib/);
@@ -41,3 +41,5 @@ ok(! $v);
 
 # use Data::Dumper;
 # warn Data::Dumper::Dumper($v);
+
+done_testing;

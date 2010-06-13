@@ -1,4 +1,4 @@
-use Test::More 'no_plan';
+use Test::More;
 
 use lib qw(./t/lib);
 use Data::RuledValidator (plugin =>[qw/URL/], filter => [qw/X X2/]);
@@ -44,8 +44,8 @@ is($q->p('i'), ' 1 ', "b-i");
 is($q->p('n'), ' 123 ', "b-n");
 $q->p(page => "b");
 is($q->p('page'), 'b');
-is($v->by_rule, '');
-is($v, '');
+is($v->by_rule->valid, '');
+is($v->valid, '');
 is($q->p('i'), 'x', "b-i");
 is($q->p('n'), 'xxx', "b-n");
 
@@ -56,8 +56,8 @@ is($q->p('i'), ' 1 ', "c-i");
 is($q->p('n'), ' 123 ', "c-n");
 $q->p(page => "c");
 is($q->p('page'), 'c');
-is($v->by_rule, '');
-is($v, '');
+is($v->by_rule->valid, '');
+is($v->valid, '');
 is($q->p('i'), 'xx', "c-i");
 is($q->p('n'), 'xxxxxx', "c-n");
 
@@ -68,8 +68,8 @@ is($q->p('i'), ' 1 ', "d-i");
 is($q->p('n'), ' 123 ', "d-n");
 $q->p(page => "d");
 is($q->p('page'), 'd');
-is($v->by_rule, '');
-is($v, '');
+is($v->by_rule->valid, '');
+is($v->valid, '');
 is($q->p('i'), 'xxxxxx', "d-i");
 is($q->p('n'), 'xxxxxxxxxx', "d-n");
 
@@ -87,3 +87,5 @@ is($q->p('i'), 'xxxxxx', "e-i");
 is($q->p('n'), 'xxxxxxxxxx', "e-n");
 is($q->p('page'), 'e', "e-page");
 is($q->p('default'), 'xyz');
+
+done_testing;
