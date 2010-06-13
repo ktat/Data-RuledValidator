@@ -10,7 +10,7 @@ pod_coverage_ok
    'Data::RuledValidator',
    {
     # It's not private, It has not written.
-    also_private => [map qr{^$_$},qw/obj id_method id_obj ok to_obj valid_yet valid_ok create_alias.* add_condition_operator/],
+    also_private => [map qr{^$_$},qw/obj id_method id_obj ok to_obj valid_yet valid_ok create_alias.* add_condition_operator by_sentence by_rule/],
    }
    ,'D:RuledValidator OK'
   );

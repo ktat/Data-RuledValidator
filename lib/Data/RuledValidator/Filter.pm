@@ -19,6 +19,11 @@ sub no_dash{
   $$v =~ s/\-//go;
 }
 
+sub no_space{
+  my($self, $v) = @_;
+  $$v =~ s/\s//go;
+}
+
 sub lc{
   my($self, $v) = @_;
   $$v = lc($$v);
@@ -39,6 +44,8 @@ sub no_filter{
 =head1 Name
 
 Data::RuledValidator::Filter - filters
+
+=head1 Filters
 
 =head2 lc
 
@@ -67,6 +74,15 @@ It remove dash included in values.
 
     '000-000-000'
  -> '000000000'
+
+
+=head2 no_space
+
+It remove all space in value.
+
+    '000 000 abc'
+ -> '000000abc'
+
 
 =head2 no_filter
 

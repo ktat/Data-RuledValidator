@@ -20,7 +20,7 @@ use constant
           Carp::croak("$c is not defined. you can use; " . join ", ", $parent->_cond_op);
         }
       }
-      return sub {my($self, $v) = @_; $v = shift @$v; return ($sub->($self, $v) + 0)};
+      return sub {my($self, $v) = @_; $v = shift @$v; return ($sub->($self, $v) + 0)}, USE_COND;
     },
     ISNT => sub { # now this is not used, using ARENT instead.
       my($key, $c) = @_;
@@ -28,10 +28,12 @@ use constant
       unless($sub){
         Carp::croak("$c is not defined. you can use; " . join ", ", $parent->_cond_op);
       }
-      return sub {my($self, $v) = @_; $v = shift @$v; return(! $sub->($self, $v) + 0)};
+      return sub {my($self, $v) = @_; $v = shift @$v; return(! $sub->($self, $v) + 0)}, USE_COND;
     },
     ARE => sub {
-      my($key, $c) = @_;
+      my($key, $c, $op, $required, $optional) = @_;
+      $required->{$key} = undef if $c =~/required/i;
+      $optional->{$key} = undef if $c =~/optional/i;
       unless($c =~/,/){
         # single condition
         my $sub = $parent->_cond_op($c) || '';
@@ -42,14 +44,24 @@ use constant
             Carp::croak("$c is not defined. you can use; " . join ", ", $parent->_cond_op);
           }
         }
-        return sub {my($self, $v) = @_; return(_vand($self, $key, $c, $v, sub{my($self, $v) = @_; $sub->($self, $v)}))};
+        return sub {
+          my($self, $v) = @_;
+          return(_vand(
+                       $self, $key, $c, $v,
+                       sub{
+                         my($self, $v) = @_;
+                         $sub->($self, $v)
+                       }
+                      )
+                )
+        }, USE_COND;
       }else{
         my @c = split /\s*,\s*/, $c;
         my @sub = grep $_, map $parent->_cond_op($_), @c;
         unless(@sub == @c){
           Carp::croak("some of '@c' are not defined. you can use; " . join ", ", $parent->_cond_op);
         }
-        return sub {my($self, $v) = @_; return(_vand($self, $key, $c, $v, sub{my($self, $v) = @_; foreach (@sub){$_->($self, $v) and return 1} }))};
+        return sub {my($self, $v) = @_; return(_vand($self, $key, $c, $v, sub{my($self, $v) = @_; foreach (@sub){$_->($self, $v) and return 1} }))}, USE_COND;;
       }
     },
     ARENT => sub {
@@ -64,14 +76,14 @@ use constant
             Carp::croak("$c is not defined. you can use; " . join ", ", $parent->_cond_op);
           }
         }
-        return sub {my($self, $v) = @_; return(_vand($self, $key, $c, $v, sub{my($self, $v) = @_; ! $sub->($self, $v)}))};
+        return sub {my($self, $v) = @_; return(_vand($self, $key, $c, $v, sub{my($self, $v) = @_; ! $sub->($self, $v)}))}, USE_COND;
       }else{
         my @c = split /\s*,\s*/, $c;
         my @sub = grep $parent->_cond_op($_), @c;
         unless(@sub == @c){
           Carp::croak("some of '@c' are not defined. you can use; " . join ", ", $parent->_cond_op);
         }
-        return sub {my($self, $v) = @_; return(_vand($self, $key, $c, $v, sub{my($self, $v) = @_; ! (grep $_->($self, $v), @sub) == @sub}))};
+        return sub {my($self, $v) = @_; return(_vand($self, $key, $c, $v, sub{my($self, $v) = @_; ! (grep $_->($self, $v), @sub) == @sub}))}, USE_COND;
       }
     },
     MATCH => sub {
@@ -81,7 +93,7 @@ use constant
         my($self, $v) = @_;
         my $ok = 0;
         foreach my $regex (@regex){
-          $ok |= $v =~ $regex or last;
+          $ok |= $v =~ $regex and last;
         }
         return $ok;
       };
@@ -138,10 +150,10 @@ use constant
       my $sub;
       if($c =~s/\s*~\s*//){
         my($start, $end) = split(/,/, $c);
-        $sub = sub{my($self, $v) = @_; return $v ? (($start <= length($v) and length($v) <=  $end) + 0) : ()}
+        $sub = sub{my($self, $v) = @_; return(($start <= length($v) and length($v) <=  $end) + 0)};
       }else{
         my($start, $end) = split(/,/, $c);
-        $sub = sub{my($self, $v) = @_; return $v ? (($start <= $v and $v <=  $end) + 0) : ()}
+        $sub = sub{my($self, $v) = @_; return(($start <= $v and $v <=  $end) + 0)};
       }
       return  sub{my($self, $v) = @_; _vand($self, $key, $c, $v, $sub)};
     },
@@ -152,7 +164,7 @@ use constant
         my($self, $v) = @_;
         my $ok = 0;
         foreach my $word (@words){
-          $ok |= $v eq $word or last;
+          $ok |= $v eq $word and last;
         }
         return $ok;
       };
@@ -249,10 +261,15 @@ $parent->add_operator
            ++$ok if $self->valid_ok($k);
            ++$n;
          }
-         return $key eq 'all' ? ($ok == $n) + 0 : ($ok == $key) + 0 ;
+         if ($key =~/^(\d)-(\d+)$/) {
+           my ($min, $max) = ($1, $2);
+           return $min <= $ok and $ok <= $max ? 1 : 0;
+         } else {
+           return $key eq 'all' ? ($ok == $n) + 0 : ($ok == $key) + 0 ;
+         }
        }, NEED_ALIAS | ALLOW_NO_VALUE;
      },
-   'of'     =>
+   'of' =>
    sub {
      my($key, $c) = @_;
      my @cond = _arg($c);
@@ -264,11 +281,45 @@ $parent->add_operator
          my $n  = 0;
          foreach my $k (@cond){
            next unless $k;
-           ++$ok if defined $obj->$method($k);
+           ++$ok if defined $obj->$method($k) and $obj->$method($k);
            ++$n;
+         }
+         if ($key =~/^(\d)-(\d+)$/) {
+           my ($min, $max) = ($1, $2);
+           return $min <= $ok and $ok <= $max ? 1 : 0;
+         } else {
+           return $key eq 'all' ? ($ok == $n) + 0 : ($ok == $key) + 0 ;
          }
          return $key eq 'all' ? ($ok == $n) + 0 : ($ok == $key) + 0 ;
        }, NEED_ALIAS | ALLOW_NO_VALUE;
+     },
+   'need' =>
+   sub {
+     my($key, $c, $op, $required, $optional) = @_;
+     my @cond = _arg($c);
+     my $when_condition;
+     if ($cond[-1] =~ s{\s+when\s+(.+)\s*$}{}) {
+       $when_condition = $1;
+     }
+     return
+       sub {
+         my($self, $values, $alias, $given_data, $validate_data) = @_;
+         if (defined $when_condition and $values->[0] ne $when_condition) {
+           return 1;
+         }
+         my($obj, $method) = ($self->obj, $self->method);
+         my $ok = 1;
+         my $n  = 0;
+         foreach my $k (@cond){
+           next unless $k;
+           if ($self->valid_yet($k)){
+             $self->{valid} &= $self->_validate($k, @$validate_data);;
+           }
+           $ok &= ($self->valid_ok($k) ? 1 : 0);
+         }
+         $self->{valid} &= $ok;
+         return $ok;
+       },# NEED_ALIAS
      },
   );
 

@@ -52,20 +52,26 @@ GLOBAL is n/a
 
 ;;registrationNoRequired
 
+require is n/a
+
 require  = all of-valid first_name, last_name, age, sex, password, password2
+# required = first_name, last_name, age, sex, password, password2
 required = n/a
 
 ;;registrationNoRequired2
 
-page is alphanum
+page is n/a
+require is n/a
 
+page is alphanum
 require  = all of-valid hogehoge
 required = n/a
 
 ;;registration_no_required
+page is n/a
+page is word
 
 required = n/a
-page is word
 
 ;;filter
 

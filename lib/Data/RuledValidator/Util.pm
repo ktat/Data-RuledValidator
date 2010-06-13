@@ -4,12 +4,14 @@ use strict;
 use warnings qw/all/;
 use base qw/Exporter/;
 
-our @EXPORT = qw(NEED_ALIAS ALLOW_NO_VALUE RKEYS _arg _vand _vor);
+our @EXPORT = qw(NEED_ALIAS ALLOW_NO_VALUE USE_COND _arg _vand _vor);
+our $VERSION = 0.03;
 
-our $VERSION = 0.02;
-
-sub NEED_ALIAS      { 1 }
-sub ALLOW_NO_VALUE  { 2 }
+use constant  {
+  NEED_ALIAS     => 1,
+  ALLOW_NO_VALUE => 2,
+  USE_COND       => 4,
+};
 
 # '&' validation for multiple values
 sub _vand{
@@ -18,9 +20,9 @@ sub _vand{
   foreach my $v (@$val){
     my $_ok = 1;
     if($_ok = $sub->($self, $v) ? 1 : 0){
-      push @{$self->{right}->{"${key}_$c"} ||= []},  $v;
+      push @{$self->{right}->{"${key}"} ||= []},  $v;
     }else{
-      push @{$self->{wrong}->{"${key}_$c"} ||= []},  $v;
+      push @{$self->{wrong}->{"${key}"} ||= []},  $v;
     }
     $ok &= $_ok;
   }
@@ -34,9 +36,9 @@ sub _vor{
   foreach my $v (@$val){
     my $_ok = 0;
     if($_ok = $sub->($self, $v) ? 1 : 0){
-      push @{$self->{right}->{"${key}_$c"} ||= []},  $v;
+      push @{$self->{right}->{"${key}"} ||= []},  $v;
     }else{
-      push @{$self->{wrong}->{"${key}_$c"} ||= []},  $v;
+      push @{$self->{wrong}->{"${key}"} ||= []},  $v;
     }
     $ok |= $_ok;
   }

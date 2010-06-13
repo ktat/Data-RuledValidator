@@ -48,8 +48,6 @@ sub parse {
   my $required_name = $self->v->required_alias_name;
   my $optional_name = $self->v->optional_alias_name;
 
-  my $no_required = 0;
-
   foreach my $def (@$def_lines){
     if ($def =~ /^trigger\s*=\s*(\w+)/) {
       $self->{trigger} = $1;
@@ -63,14 +61,13 @@ sub parse {
     my $alias = $def =~ s/^\s*(\w+)\s*=\s*// ? $1 : '';
     if($alias and $alias eq $required_name){
       if($def =~ m{^\s*n/a\s*$}){
-        $no_required = 1;
-        %required = ();
+#        $no_required = 1;
       }elsif(my @keys = grep $_, split /\s*,\s*/, $def){
         @required{@keys} = ();
       }
     }elsif($alias and $alias eq $optional_name){
       if($def =~ m{^\s*n/a\s*$}){
-        $no_required = 1;
+#        $no_required = 1;
       }elsif(my @keys = grep $_, split /\s*,\s*/, $def){
         @optional{@keys} = ();
       }
@@ -105,7 +102,7 @@ sub parse {
 
   # return(\%def, $no_required ? undef : \%required, $no_filter ? undef : \%filter);
   @{$self}{qw/defs required filter as optional/}
-    = (\%def, ($no_required ? undef : \%required), \%filter, \%as, \%optional);
+    = (\%def, \%required, \%filter, \%as, \%optional);
   return $self;
 }
 
