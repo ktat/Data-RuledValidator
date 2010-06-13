@@ -1,4 +1,4 @@
-use Test::More 'no_plan';
+use Test::More;
 
 BEGIN {
   use_ok('Data::RuledValidator');
@@ -73,3 +73,5 @@ reset
 get_rule
 by_rule
 =cut
+
+done_testing;

@@ -1,4 +1,4 @@
-use Test::More 'no_plan';
+use Test::More;
 
 BEGIN {
   use_ok('Data::RuledValidator');
@@ -61,3 +61,5 @@ fcopy("t/original.rule" => "t/validator.rule");
 
 ok(not $v->by_rule);
 ok(not $v);
+
+done_testing;

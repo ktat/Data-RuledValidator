@@ -1,4 +1,4 @@
-use Test::More 'no_plan';
+use Test::More;
 
 use lib qw(t/lib/);
 
@@ -49,3 +49,4 @@ ok(not $v->valid);
 ok(! $v);
 is($q->param('lm'), 'ktat@cpan.org');
 
+done_testing;
