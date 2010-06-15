@@ -11,6 +11,7 @@ t/rule.t
 t/original.rule
 t/original-2.rule
 t/rule-complicate.t
+t/validator.rule
 t/validator_complicate.rule
 t/filter.rule
 t/lib/Data/RuledValidator/Plugin/URL.pm
