@@ -17,3 +17,12 @@ n is num
 ;;c
 
 mail is mail
+
+;;d
+
+outer eq {outer}
+
+;;e
+
+{outer} as outer
+outer eq hoge

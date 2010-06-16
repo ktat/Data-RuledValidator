@@ -36,6 +36,28 @@ $q->p(mail => 'atsushi@example.com');
 ok($v->by_rule);
 ok($v);
 
+# d
+$q->p(page => "d");
+$q->p(outer => "hoge");
+ok($v->check_rule({outer => "hoge"}), "d ok");
+ok($v);
+
+# d
+$q->p(page => "d");
+$q->p(outer => "hoge");
+ok(!$v->check_rule({outer => "hogehoge"}), "d fail");
+ok(!$v);
+
+# e
+$q->p(page => "e");
+ok(!$v->check_rule({outer => "fuga"}), "e ok");
+ok(!$v);
+
+# e
+$q->p(page => "e");
+ok(!$v->check_rule({outer => "fugafuga"}), "e not ok");
+ok(!$v);
+
 # change rule
 fcopy("t/original-2.rule" => "t/validator.rule");
 
@@ -53,7 +75,7 @@ ok($v);
 # c
 $q->p(page => "c");
 $q->p(mail => 'atsus/hi.@example.com');
-ok($v->by_rule);
+ok($v->by_rule());
 ok($v);
 
 # change rule
