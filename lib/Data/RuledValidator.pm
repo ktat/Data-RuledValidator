@@ -244,10 +244,14 @@ sub _validate {
 
     my @value;
     if (exists $as->{$alias || $key}) {
-      my $with = $as->{$alias || $key}->{with};
-      my @v  = map $_->[0], @{$value}{@{$as->{$alias || $key}->{key}}};
-      if ((grep {defined $_ and $_ ne ''}  @v) == @v) {
-        @value = (sprintf $with, @v);
+      if ($as->{$alias || $key}->{data}) {
+        @value = $given_data->{$alias || $key};
+      } else {
+        my $with = $as->{$alias || $key}->{with};
+        my @v  = map $_->[0], @{$value}{@{$as->{$alias || $key}->{key}}};
+        if ((grep {defined $_ and $_ ne ''}  @v) == @v) {
+          @value = (sprintf $with, @v);
+        }
       }
       $self->_as_value($alias || $key, @value);
     } else {
@@ -760,6 +764,13 @@ Using 1 or [] is depends on the way to set value with object method.
 
  1  ...  $q->param(key, @value);
  [] ...  $q->param(key, [ @value ]);
+
+=item as
+
+You can define the name of given data.
+
+ {data_name} as hoge
+ hoge eq 'fuagafuga'
 
 =item as_embed
 

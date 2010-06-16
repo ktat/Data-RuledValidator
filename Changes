@@ -4,6 +4,9 @@ Revision history for Perl extension Data::RuledValidator.
         - ***WARNING*** This release breaks compatibility with versions earlier than version 0.20.
 	- provide more detail result/failure structure
 
+0.12 Tue Jun  15 10:00
+	- fix Makefile.PL. add Module::Pluggable.
+
 0.11 Mon Jun  14 0:44
 	- fix test for Test::Simple 0.95_2
 

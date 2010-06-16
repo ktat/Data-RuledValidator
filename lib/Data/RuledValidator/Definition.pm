@@ -53,7 +53,11 @@ sub parse {
       $self->{trigger} = $1;
       next;
     }
-    if ($def =~ /^(.+)\s+as\s+(\w+)(?:\s+with\s+(.+))?$/) {
+    if ($def =~ /^\s*\{(\w+)\}\s+as\s+(\w+)\s*$/) {
+      my ($data, $as) = ($1, $2);
+      $as{$as} = {data => $data};
+      next;
+    } elsif ($def =~ /^(.+)\s+as\s+(\w+)(?:\s+with\s+(.+))?$/) {
       my ($combination, $as, $with) = ($1, $2, $3);
       $as{$as} = {key => [split /\s+/, $combination], with => (_arg($with))[0]};
       next;
