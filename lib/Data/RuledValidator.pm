@@ -268,7 +268,7 @@ sub _validate {
       if($flg & ALLOW_NO_VALUE or any {defined $_ and $_ ne ''} @value){
         $alias_result &= $r = $sub->($self, \@value, $alias, $given_data, $validate_data) || 0;
         $result->{$alias}->{$result_key} = $r;
-        if (not $r and @value and not defined $failure->{$alias}->{$result_key}) {
+        if (not $r and ($flg & ALLOW_NO_VALUE or @value) and not defined $failure->{$alias}->{$result_key}) {
           $failure->{$alias}->{$result_key} = \@value;
         }
         $result->{$alias}->{valid} = 1 if not defined $result->{$alias}->{valid};
