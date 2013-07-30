@@ -15,9 +15,9 @@ Data::RuledValidator->add_condition_operator
    'alphanum' => sub{my($self, $v) = @_; return $v =~/^[a-zA-Z0-9]+$/},
    'word'     => sub{my($self, $v) = @_; return $v =~/^\w+$/},
    'words'    => sub{my($self, $v) = @_; return $v =~/^[\w\s]+$/},
-   'any'      => sub{my($self, $v) = @_; return defined $v and $v ne ''},
-   'not_null' => sub{my($self, $v) = @_; return defined $v and $v ne ''},
-   'null'     => sub{my($self, $v) = @_; return not defined $v or $v eq ''},
+   'any'      => sub{my($self, $v) = @_; return (defined $v and $v ne '')},
+   'not_null' => sub{my($self, $v) = @_; return (defined $v and $v ne '')},
+   'null'     => sub{my($self, $v) = @_; return (not defined $v or $v eq '')},
   );
 
 1;

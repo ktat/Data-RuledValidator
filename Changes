@@ -1,5 +1,10 @@
 Revision history for Perl extension Data::RuledValidator.
 
+0.13 Wed Jul  31 01:52
+       - fix bug
+         wrong return precedence (https://rt.cpan.org/Public/Bug/Display.html?id=87299)
+         Thanks rurban.
+
 0.12 Tue Jun  15 10:00
        - fix Makefile.PL. add Module::Pluggable.
 
